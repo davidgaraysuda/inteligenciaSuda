@@ -1,9 +1,12 @@
 const express = require ('express');
 const Database = require ('./mysqlcon');
-
-const app = express();
+const cors = require('cors')
 const port = 3001;
-
+//Iniciamos en app el servidore web
+const app = express()
+//Agregamos CORS (politicas de seguridad)
+// PAra que otros dominios (react localhost:3000) puedan acceder a nuestros datos
+app.use(cors())
 app.use(express.json())
 
 app.get('/', (req, res)=>{
@@ -28,7 +31,8 @@ app.post('/cards', (req, res)=>{
     res.json(body)
 })
 
-
-app.listen(port, () => {
-    console.log('localhost:'+port);
+//Habilitamos el servidor en el puerto indicado
+//En esta caso sera 3001 porque el 3000 ya es usado por React
+app.listen(port,     () => {
+    console.log('Sevidor Express en: http://localhost:'+port);
 })
