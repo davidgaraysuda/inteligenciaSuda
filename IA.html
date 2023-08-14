@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #results {
+            margin-top: 20px;
+        }
+
+        p {
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Formulario de Preferencias (Primer Ciclo)</h2>
+
+        <form id="numberForm">
+            <label for="hardware">Hardware:</label>
+            <input type="number" name="hardware" min="1" max="10" required><br>
+
+            <label for="problemasInformaticos">Problemas Informáticos:</label>
+            <input type="number" name="problemasInformaticos" min="1" max="10" required><br>
+
+            <label for="baseDatos">Base de Datos:</label>
+            <input type="number" name="baseDatos" min="1" max="10" required><br>
+
+            <label for="matematicaComputacional">Matemática Computacional:</label>
+            <input type="number" name="matematicaComputacional" min="1" max="10" required><br>
+
+            <label for="interfacesGraficas">Interfaces Gráficas:</label>
+            <input type="number" name="interfacesGraficas" min="1" max="10" required><br>
+
+            <button type="submit">Enviar</button>
+        </form>
+
+        <div id="results"></div>
+    </div>
+
+    <script src="https://unpkg.com/brain.js"></script>
+    <script type="text/javascript">
+        var network = new brain.NeuralNetwork();
+        network.train([
+            { input: { hardware: 0 }, output: { actividad: 0 } },
+            { input: { problemasInformaticos: 0 }, output: { actividad: 0 } },
+            { input: { baseDatos: 0 }, output: { actividad: 0 } },
+            { input: { matematicaComputacional: 0 }, output: { actividad: 0 } },
+            { input: { interfacesGraficas: 0 }, output: { actividad: 0 } },
+            { input: { hardware: 1 }, output: { actividad: 1 } },
+            { input: { problemasInformaticos: 1 }, output: { actividad: 1 } },
+            { input: { baseDatos: 1 }, output: { actividad: 1 } },
+            { input: { matematicaComputacional: 1 }, output: { actividad: 1 } },
+            { input: { interfacesGraficas: 1 }, output: { actividad: 1 } },
+            { input: { hardware: 0.5, problemasInformaticos: 0.3, baseDatos: 0.7, matematicaComputacional: 0.6, interfacesGraficas: 0.8 }, output: { actividad: 0.75 } },
+            { input: { hardware: 0.8, problemasInformaticos: 0.9, baseDatos: 0.2, matematicaComputacional: 0.6, interfacesGraficas: 0.4 }, output: { actividad: 0.5 } },
+        ]);
+
+        document.getElementById("numberForm").addEventListener("submit", function (event) {
+            event.preventDefault(); // Evitar que el formulario se envíe por defecto
+
+            var formData = new FormData(event.target);
+            var entries = {};
+
+            for (let [name, value] of formData.entries()) {
+                entries[name] = value / 10;
+            }
+
+            evaluate(entries);
+        });
+
+        function evaluate(entries) {
+            var results = [];
+
+            for (const key in entries) {
+                var entry = {};
+                entry[key] = entries[key];
+
+                var result = network.run(entry);
+                results.push({ entry: key, result: result });
+            }
+
+            displayResults(results);
+        }
+
+        function displayResults(results) {
+            var resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = '';
+
+            results.forEach(result => {
+                var resultElement = document.createElement("p");
+
+                if (result.entry == "hardware" && result.result.actividad > 0.6) {
+                    resultElement.textContent = `Coincidencia encontrada (${result.result.actividad}) Actividad: Limpieza preventiva de equipos`;
+                }
+                if (result.entry == "problemasInformaticos" && result.result.actividad > 0.6) {
+                    resultElement.textContent = `Coincidencia encontrada (${result.result.actividad}) Actividad: Enseñanza básica en programas informáticos`;
+                }
+                if (result.entry == "baseDatos" && result.result.actividad > 0.6) {
+                    resultElement.textContent = `Coincidencia encontrada (${result.result.actividad}) Actividad: Gestión/Creación Base de Datos`;
+                }
+                if (result.entry == "matematicaComputacional" && result.result.actividad > 0.6) {
+                    resultElement.textContent = `Czoincidencia encontrada (${result.result.actividad}) Actividad: Enseñanza básica de la materia`;
+                }
+                if (result.entry == "interfacesGraficas" && result.result.actividad > 0.6) {
+                    resultElement.textContent = `Coincidencia encontrada (${result.result.actividad}) Actividad: Corrección/Creación Interfaces gráficas Web`;
+                }
+
+
+                resultsDiv.appendChild(resultElement);
+            });
+        }
+    </script>
+</body>
+
+</html>
